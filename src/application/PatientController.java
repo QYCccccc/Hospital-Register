@@ -73,6 +73,7 @@ class ListItemForDoctName extends ListItem {
         number = result.getString(Config.NameTableColumnDoctorNumber);
         deptNum = result.getString(Config.NameTableColumnDoctorDepartmentNumber);
         isSpecialist = result.getBoolean(Config.NameTableColumnDoctorIsSpecialist);
+        pronounce = result.getString(Config.NameTableColumnDoctorPronounce);
     }
 }
 
@@ -99,6 +100,7 @@ class ListItemForRegName extends ListItem {
         isSpecialist = result.getBoolean(Config.NameTableColumnCategoryRegisterIsSpecialist);
         department = result.getString(Config.NameTableColumnCategoryRegisterDepartment);
         maxNum = result.getInt(Config.NameTableColumnCategoryRegisterMaxRegisterNumber);
+        pronounce = result.getString(Config.NameTableColumnCategoryRegisterPronounce);
     }
 }
 
@@ -187,6 +189,7 @@ public class PatientController implements Initializable {
         inputdep.getEditor().setOnKeyReleased(KeyEvent -> {
             if(shouldPassKeyCode(KeyEvent.getCode()))
                 return;
+            //根据输入的关键字进行检索
             reFilterDepartment(true);
             reFilterDoctor(false);
             reFilterRegisterType(false);
@@ -440,10 +443,11 @@ public class PatientController implements Initializable {
     private void updateButtonEnter() {
         button_enter.setDisable(true);
         int index;
+        double money = inputpay.getText().trim().isEmpty()? 0.0 : Double.parseDouble(inputpay.getText().trim());
         if(inputdoctname.getSelectionModel().getSelectedIndex() != -1 &&
                 (index = inputnamecat.getSelectionModel().getSelectedIndex()) != -1 &&
                 ((usebalance.isSelected() && PatientBalance >= listRegNameFiltered.get(index).fee) ||
-                        (!usebalance.isSelected() && Double.parseDouble(inputpay.getText().trim()) >=
+                        (!usebalance.isSelected() && money >=
                                 listRegNameFiltered.get(index).fee))) {
             button_enter.setDisable(false);
         }
@@ -524,6 +528,7 @@ public class PatientController implements Initializable {
         if(!withoutSelect) {
             if(!isInputValid) {
                 inputdep.getEditor().clear();
+                System.out.println("Invalid input department name");
             }
             if(newSelection != -1) {
                 inputdep.getSelectionModel().clearAndSelect(newSelection);
@@ -557,7 +562,8 @@ public class PatientController implements Initializable {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println(tmp);
+            System.out.println("pronounced：" + tmp.getPronounce());
+            System.out.println(tmp + inputdoctname.getEditor().getText());
         }
 
         //filter by department
@@ -573,8 +579,7 @@ public class PatientController implements Initializable {
         list1 = FXCollections.observableArrayList();
         if((index = inputtyperegister.getSelectionModel().getSelectedIndex()) != -1) {
             for (ListItemForDoctName item : list0) {
-                if ((item.isSpecialist && listRegtypeFiltered.get(index).isSpecialist) ||
-                        (!item.isSpecialist && !listRegtypeFiltered.get(index).isSpecialist))
+                if (item.isSpecialist || !listRegtypeFiltered.get(index).isSpecialist)
                     list1.add(item);
             }
             list0 = list1;
@@ -612,6 +617,7 @@ public class PatientController implements Initializable {
         if(!withoutSelect) {
             if(!isInputValid)
                 inputdoctname.getEditor().clear();
+            System.out.println("invalid input doctor name");
             if(newSelection != -1){
                 inputdoctname.getSelectionModel().clearAndSelect(counter);
                 inputdoctname.getEditor().setText((String) inputdoctname.getItems().get(newSelection));
@@ -685,6 +691,7 @@ public class PatientController implements Initializable {
         if(!withoutSelect) {
             if(!isInputValid){
                 inputtyperegister.getEditor().clear();
+                System.out.println("invalid input register type");
                 if (newSelecttion != -1) {
                     inputtyperegister.getSelectionModel().clearAndSelect(newSelecttion);
                     inputtyperegister.getEditor().setText((String) inputtyperegister.getItems().get(newSelecttion));
@@ -749,7 +756,7 @@ public class PatientController implements Initializable {
         //add to filtered list and comboBox
         boolean isInputValid = false;
         int counter = 0, newSelecttion = -1;
-        listRegtypeFiltered.clear();
+        listRegNameFiltered.clear();
         inputnamecat.getItems().clear();
         for (ListItemForRegName item : list0) {
             listRegNameFiltered.add(item);
@@ -766,6 +773,7 @@ public class PatientController implements Initializable {
         if(!withoutSelect) {
             if(!isInputValid){
                 inputnamecat.getEditor().clear();
+                System.out.println("invalid input register name_cat");
                 if(newSelecttion != -1) {
                     inputnamecat.getSelectionModel().clearAndSelect(newSelecttion);
                     inputnamecat.getEditor().setText((String) inputnamecat.getItems().get(newSelecttion));
