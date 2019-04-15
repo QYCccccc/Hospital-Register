@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<SplitPane fx:id="mainPane" dividerPositions="0.22110552763819097" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.PatientController">
+  <items>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+    
+         <children>
+            <GridPane layoutY="-2.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="85.0" prefWidth="598.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label prefHeight="28.0" prefWidth="124.0" text="门 诊 挂 号" textFill="#5c0a41" GridPane.halignment="CENTER">
+                     <font>
+                        <Font name="Arial" size="24.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="labelinfo" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
+         </children></AnchorPane>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="319.0" prefWidth="598.0">
+         <children>
+            <GridPane alignment="CENTER" prefHeight="307.0" prefWidth="598.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="80.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="296.0" minWidth="0.0" prefWidth="200.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="398.0" minWidth="0.0" prefWidth="80.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="398.0" minWidth="10.0" prefWidth="200.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints fillHeight="false" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <ComboBox fx:id="inputdep" editable="true" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="23.0" prefWidth="250.0" promptText="科室名称" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" />
+                  <ComboBox fx:id="inputdoctname" editable="true" prefWidth="250.0" promptText="医生名称" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" />
+                  <ComboBox fx:id="inputtyperegister" editable="true" prefWidth="250.0" promptText="号种类别" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <ComboBox fx:id="inputnamecat" editable="true" prefWidth="250.0" promptText="号种名称" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <TextField fx:id="inputpay" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label fx:id="labelfee" prefWidth="160.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                  <Label fx:id="labelrefund" prefWidth="161.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label fx:id="labelregnum" prefHeight="23.0" prefWidth="161.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                  <Label text="挂号号码" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label text="应缴金额" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label text="交款金额" GridPane.rowIndex="2">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label text="找零金额" GridPane.rowIndex="3">
+                     <font>
+                        <Font name="Arial Bold" size="15.0" />
+                     </font>
+                  </Label>
+                  <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="180.0" GridPane.columnSpan="2" GridPane.rowIndex="4" GridPane.valignment="TOP">
+                    <columnConstraints>
+                      <ColumnConstraints maxWidth="145.0" minWidth="10.0" prefWidth="90.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="212.0" minWidth="10.0" prefWidth="90.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <CheckBox fx:id="usebalance" mnemonicParsing="false" text="余额付款" GridPane.valignment="BOTTOM" />
+                        <CheckBox fx:id="addTobalance" mnemonicParsing="false" text="存入余额" GridPane.columnIndex="1" GridPane.valignment="BOTTOM" />
+                     </children>
+                  </GridPane>
+                  <GridPane GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="4">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Button fx:id="button_enter" mnemonicParsing="false" onKeyReleased="#keyRelease" onMouseClicked="#on_pushButtonEnter_clicked" text="确定" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="button_clear" mnemonicParsing="false" onKeyReleased="#keyRelease" onMouseClicked="#on_pushButtonClear_clicked" text="清除" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="button_exit" mnemonicParsing="false" onKeyReleased="#keyRelease" onMouseClicked="#on_pushButtonExit_clicked" text="退出" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </GridPane>
+                  <Label fx:id="labelStatus" GridPane.columnSpan="2" GridPane.rowIndex="4" GridPane.valignment="BOTTOM" />
+               </children>
+            </GridPane>
+         </children></AnchorPane>
+  </items>
+</SplitPane>
