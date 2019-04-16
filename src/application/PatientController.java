@@ -11,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -250,11 +251,16 @@ public class PatientController implements Initializable {
         inputtyperegister.getEditor().setOnKeyReleased(KeyEvent -> {
             if(shouldPassKeyCode(KeyEvent.getCode()))
                 return;
-
+            System.out.println("Begin");
             reFilterRegisterType(true);
+            System.out.println("index:" + inputdoctname.getSelectionModel().getSelectedIndex());
             reFilterDepartment(false);
+            System.out.println("index:" + inputdoctname.getSelectionModel().getSelectedIndex());
             reFilterDoctor(false);
+            System.out.println("index:" + inputdoctname.getSelectionModel().getSelectedIndex());
             reFilterRegisterName(false);
+            System.out.println("index:" + inputdoctname.getSelectionModel().getSelectedIndex());
+            System.out.println("End");
             if(!inputtyperegister.isShowing())
                 inputtyperegister.show();
             else {
@@ -316,13 +322,21 @@ public class PatientController implements Initializable {
         });
 
         usebalance.setOnKeyReleased(KeyEvent -> {
-            if (KeyEvent.getCode() == KeyCode.SPACE)
+            if (KeyEvent.getCode() == KeyCode.ENTER)
                 useBalanceSelected();
             else
                 KeyEvent.consume();
         });
         usebalance.setOnMouseClicked(MouseEvent -> {
             useBalanceSelected();
+            System.out.println("MouseClicked!");
+        });
+
+        inputpay.setOnKeyReleased(KeyEvent -> {
+            if (KeyEvent.getCode() == KeyCode.ENTER) {
+                updateRefund();
+                updateButtonEnter();
+            }
         });
     }
     //更新病人基本信息显示
@@ -444,13 +458,17 @@ public class PatientController implements Initializable {
         button_enter.setDisable(true);
         int index;
         double money = inputpay.getText().trim().isEmpty()? 0.0 : Double.parseDouble(inputpay.getText().trim());
+        //why inputdoctname index = -1?
         if(inputdoctname.getSelectionModel().getSelectedIndex() != -1 &&
                 (index = inputnamecat.getSelectionModel().getSelectedIndex()) != -1 &&
                 ((usebalance.isSelected() && PatientBalance >= listRegNameFiltered.get(index).fee) ||
                         (!usebalance.isSelected() && money >=
                                 listRegNameFiltered.get(index).fee))) {
             button_enter.setDisable(false);
-        }
+
+            System.out.println("able");
+        } else
+            System.out.println("disable: "+ inputdoctname.getSelectionModel().getSelectedIndex());
     }
 
     /**
@@ -465,6 +483,7 @@ public class PatientController implements Initializable {
             updateRefund();
         }
         updateButtonEnter();
+        System.out.println("UseBalacne select");
     }
 
 
@@ -508,6 +527,7 @@ public class PatientController implements Initializable {
 
         //add to filtered listDepartmentname and combobox
         boolean isInputValid = false;
+        //newSelection 设置过滤后的list的index
         int counter = 0, newSelection = -1;
         inputdep.getItems().clear();
         listDeptNameFiltered.clear();
@@ -615,11 +635,14 @@ public class PatientController implements Initializable {
         }
         //clear invalid input
         if(!withoutSelect) {
-            if(!isInputValid)
+            if(!isInputValid) {
+                System.out.println("invalid input doctor name：" + inputdoctname.getEditor().getText().trim());
                 inputdoctname.getEditor().clear();
-            System.out.println("invalid input doctor name");
+            }
+
+
             if(newSelection != -1){
-                inputdoctname.getSelectionModel().clearAndSelect(counter);
+                inputdoctname.getSelectionModel().clearAndSelect(newSelection);
                 inputdoctname.getEditor().setText((String) inputdoctname.getItems().get(newSelection));
             }
         }
@@ -689,13 +712,13 @@ public class PatientController implements Initializable {
 
         //clear invalid input
         if(!withoutSelect) {
-            if(!isInputValid){
+            if(!isInputValid) {
                 inputtyperegister.getEditor().clear();
                 System.out.println("invalid input register type");
-                if (newSelecttion != -1) {
-                    inputtyperegister.getSelectionModel().clearAndSelect(newSelecttion);
-                    inputtyperegister.getEditor().setText((String) inputtyperegister.getItems().get(newSelecttion));
-                }
+            }
+            if (newSelecttion != -1) {
+                inputtyperegister.getSelectionModel().clearAndSelect(newSelecttion);
+                inputtyperegister.getEditor().setText((String) inputtyperegister.getItems().get(newSelecttion));
             }
         }
     }
@@ -771,13 +794,13 @@ public class PatientController implements Initializable {
 
         //clear invalid input
         if(!withoutSelect) {
-            if(!isInputValid){
+            if(!isInputValid) {
                 inputnamecat.getEditor().clear();
                 System.out.println("invalid input register name_cat");
-                if(newSelecttion != -1) {
-                    inputnamecat.getSelectionModel().clearAndSelect(newSelecttion);
-                    inputnamecat.getEditor().setText((String) inputnamecat.getItems().get(newSelecttion));
-                }
+            }
+            if(newSelecttion != -1) {
+                inputnamecat.getSelectionModel().clearAndSelect(newSelecttion);
+                inputnamecat.getEditor().setText((String) inputnamecat.getItems().get(newSelecttion));
             }
         }
     }
@@ -846,6 +869,7 @@ public class PatientController implements Initializable {
             }
             mainPane.setDisable(false);
         });
+        service.start();
     }
     public void on_pushButtonClear_clicked() {
         System.out.println("button clear clicked!");
@@ -899,6 +923,7 @@ final class RegisterService extends Service {
                         registerNum = DBConnector.getInstance().register(registerCategoryNumber,
                                 doctorNum, patientNum, registerFee,
                                 deductFromBalance, addTobalance);
+                        System.out.println("register num: " + registerNum);
 
                         break;  //正常情况下挂号成功，则直接跳出循环不需要重试
                     } catch (RegisterExcption registerExcption) {
