@@ -135,7 +135,8 @@ public class DBConnector {
             if(!result.next())
                 regNum = 0;
             else
-                regNum = Integer.parseInt(result.getString(Config.NameTableColumnRegisterNumber));
+                regNum = Integer.parseInt(result.getString(Config.NameTableColumnRegisterNumber)) + 1;
+            System.out.println("In DBConnector regNum: " + regNum);
             //获取当前号种挂号统计
             result = handelstm.executeQuery(
                     "select * from " + Config.NameTableRegister +
@@ -178,7 +179,7 @@ public class DBConnector {
 
             //向挂号信息表中插入一个新的表项
             handelstm.executeUpdate(
-                    String.format("insert into %s values (\"%06d\",\"%s\",\"%s\",\"%s\",%d,false,%s,current_timestamp",
+                    String.format("insert into %s values (\"%06d\",\"%s\",\"%s\",\"%s\",%d,false,%s,current_timestamp)",
                             Config.NameTableRegister,
                             regNum, registerCategoryNumber, doctorNum, patientNum, currCount + 1, registerFee)
             );
@@ -223,6 +224,7 @@ public class DBConnector {
                 ex.printStackTrace();
                 throw new RegisterExcption("数据库发生错误", RegisterExcption.ErrorCode.sqlException);
             }
+            e.printStackTrace();
         }
         return 0;
     }
@@ -272,8 +274,9 @@ public class DBConnector {
                 "as depname, reg." + Config.NameTableColumnRegisterDoctorNumber +
                 ",doc." + Config.NameTableColumnDepartmentName +
                 " as docname, cat." + Config.NameTableColumnCategoryRegisterIsSpecialist +
-                ", reg." + Config.NameTableColumnRegisterCurrentRegisterCount +
-                ", SUM(reg." + Config.NameTableColumnRegisterFee +
+//                ", reg." + Config.NameTableColumnRegisterCurrentRegisterCount +   error statement
+                ",COUNT(reg." + Config.NameTableColumnRegisterDoctorNumber +
+                ") as current_reg_count, SUM(reg." + Config.NameTableColumnRegisterFee +
                 ") as sum from " + (
                         " (select * from " + Config.NameTableRegister +
                                 " where " + Config.NameTableColumnRegisterDateTime +

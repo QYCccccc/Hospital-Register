@@ -840,7 +840,7 @@ public class PatientController implements Initializable {
         int index = inputnamecat.getSelectionModel().getSelectedIndex();
         RegisterService service = new RegisterService(
                 listRegNameFiltered.get(index).number,
-                listDoctName.get(inputdoctname.getSelectionModel().getSelectedIndex()).number,
+                listDoctNameFiltered.get(inputdoctname.getSelectionModel().getSelectedIndex()).number,
                 PatientNumber,
                 listRegNameFiltered.get(index).fee,
                 usebalance.isSelected(),
@@ -862,7 +862,8 @@ public class PatientController implements Initializable {
                     labelStatus.setText("系统繁忙，请稍后再试!");
                     labelStatus.setStyle("-fx-text-fill: red;");
                 case noError:
-                    labelStatus.setText("挂号成功，挂号号码: " + service.registerNum);
+                    labelStatus.setText("挂号成功");
+                    labelregnum.setText(String.valueOf(service.registerNum));
                     PatientBalance = service.updateBalance;
                     updateDisplayInfo();
                     break;
@@ -947,6 +948,7 @@ final class RegisterService extends Service {
                     if(!result.next())
                         returnCode = RegisterExcption.ErrorCode.patientNotExist;
                     updateBalance = result.getDouble(Config.NameTableColumnPatientBalance);
+                    System.out.println("Balance: " + updateBalance);
                 }
                 return null;
             }
