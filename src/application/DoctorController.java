@@ -4,6 +4,7 @@ import com.sun.javafx.robot.impl.FXRobotHelper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +17,11 @@ import javafx.scene.input.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class DoctorController implements Initializable {
@@ -26,11 +32,11 @@ public class DoctorController implements Initializable {
         private SimpleStringProperty regTime;
         private SimpleStringProperty regType;
 
-        Register(String number, String patientName, String regTime, String regType) {
+        Register(String number, String patientName, Timestamp regTime, boolean regType) {
             this.number = new SimpleStringProperty(number);
             this.patientName = new SimpleStringProperty(patientName);
-            this.regTime = new SimpleStringProperty(regTime);
-            this.regType = new SimpleStringProperty(regType);
+            this.regTime = new SimpleStringProperty(regTime.toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            this.regType = new SimpleStringProperty(regType? "专家号":"普通号");
         }
     }
 
@@ -43,16 +49,17 @@ public class DoctorController implements Initializable {
         private SimpleStringProperty totalIncome;
 
         public Income(String deptName, String doctId, String doctName,
-                      String regType, String regCount, String totalIncome) {
+                      boolean regType, int regCount, double totalIncome) {
             this.deptName = new SimpleStringProperty(deptName);
             this.doctId = new SimpleStringProperty(doctId);
             this.doctName = new SimpleStringProperty(doctName);
-            this.regType = new SimpleStringProperty(regType);
-            this.regCount = new SimpleStringProperty(regCount);
-            this.totalIncome = new SimpleStringProperty(totalIncome);
+            this.regType = new SimpleStringProperty(regType? "专家号" : "普通号");
+            this.regCount = new SimpleStringProperty(Integer.toString(regCount));
+            this.totalIncome = new SimpleStringProperty(String.format("%.2f", totalIncome));
         }
     }
     public static String name;
+    public static String doctNum;
     @FXML
     private Label labelInfo;
     @FXML
@@ -75,6 +82,10 @@ public class DoctorController implements Initializable {
     private Tab tabReg, tabIncome;
     @FXML
     private TabPane tabPane;
+    @FXML
+    private CheckBox checkBox_allTime, checkBox_today;
+    @FXML
+    private DatePicker startDate, endDate;
 
     private ObservableList<Register> listReg = FXCollections.observableArrayList();
     private ObservableList<Income> listIncome = FXCollections.observableArrayList();
@@ -109,6 +120,32 @@ public class DoctorController implements Initializable {
             }
         });
 
+        checkBox_allTime.setOnAction(ActionEvent -> {
+            if (checkBox_allTime.isSelected()) {
+                checkBox_today.setSelected(false);
+                startDate.setDisable(true);
+                endDate.setDisable(true);
+            }
+            else {
+                startDate.setDisable(false);
+                endDate.setDisable(false);
+            }
+        });
+        checkBox_today.setOnAction(ActionEvent -> {
+            if(checkBox_today.isSelected()) {
+                checkBox_allTime.setSelected(false);
+                startDate.setDisable(true);
+                endDate.setDisable(true);
+            }
+            else {
+                startDate.setDisable(false);
+                endDate.setDisable(false);
+            }
+        });
+        buttonRefresh.setOnAction(ActionEvent -> {
+            on_push_buttonRefresh();
+        });
+
         //将register对象的某些属性bind到挂号列表的特定列
         reg_id.setCellValueFactory(cellData -> cellData.getValue().number);
         patient_name.setCellValueFactory(cellData -> cellData.getValue().patientName);
@@ -126,8 +163,74 @@ public class DoctorController implements Initializable {
     //更新按钮的事件处理函数
     private void on_push_buttonRefresh() {
         if (tabPane.getSelectionModel().getSelectedItem() == tabReg) {
-            ResultSet result;
+            ResultSet result = null;
 
+            if(checkBox_allTime.isSelected()) {
+                result = DBConnector.getInstance().getRegisterForDoctor(doctNum,
+                        "0000-00-00 00:00:00",
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+            else if (checkBox_today.isSelected()) {
+                result = DBConnector.getInstance().getRegisterForDoctor(doctNum,
+                        LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00",
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+            else {
+                result = DBConnector.getInstance().getRegisterForDoctor(doctNum,
+                        startDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00",
+                        endDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00");
+            }
+            if (result == null) {
+                System.out.println("result set is empty!");
+                return;
+            }
+
+            try {
+                listReg.clear();
+                while (result.next()) {
+                    listReg.add(new Register(result.getString(Config.NameTableColumnRegisterNumber),
+                            result.getString(Config.NameTableColumnPatientName),
+                            result.getTimestamp(Config.NameTableColumnRegisterDateTime),
+                            result.getBoolean(Config.NameTableColumnCategoryRegisterIsSpecialist)));
+                }
+                table_reg.setItems(listReg);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+        else if (tabPane.getSelectionModel().getSelectedItem() == tabIncome) {
+            ResultSet result = null;
+            if(checkBox_allTime.isSelected()) {
+                result = DBConnector.getInstance().getIncomeInfo("0000-00-00 00:00:00",
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+            else if (checkBox_today.isSelected()) {
+                result = DBConnector.getInstance().getIncomeInfo(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00",
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+            else {
+                result = DBConnector.getInstance().getIncomeInfo(startDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00",
+                        endDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00");
+            }
+            if (result == null) {
+                System.out.println("result set is empty!");
+                return;
+            }
+            try {
+                listIncome.clear();
+                while (result.next()) {
+                    listIncome.add(new Income(result.getString("depname"),
+                            result.getString(Config.NameTableColumnDoctorNumber),
+                            result.getString("docname"),
+                            result.getBoolean(Config.NameTableColumnCategoryRegisterIsSpecialist),
+                            result.getInt(Config.NameTableColumnRegisterCurrentRegisterCount),
+                            result.getDouble("sum")));
+                }
+                table_income.setItems(listIncome);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

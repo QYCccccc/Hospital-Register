@@ -238,7 +238,7 @@ public class DBConnector {
      */
     public ResultSet getRegisterForDoctor(String docNum, String startTime, String endTime) {
         String sql = "select reg." + Config.NameTableColumnRegisterNumber +
-                ", pat." + Config.NameTableColumnPatientNumber +
+                ", pat." + Config.NameTableColumnPatientName +
                 ", reg." + Config.NameTableColumnRegisterDateTime +
                 ", cat." + Config.NameTableColumnCategoryRegisterIsSpecialist + (
                         " from (select " + Config.NameTableColumnRegisterNumber +
@@ -271,7 +271,7 @@ public class DBConnector {
 
     public ResultSet getIncomeInfo(String startTime, String endTime) {
         String sql = "select dep." + Config.NameTableColumnDepartmentName +
-                "as depname, reg." + Config.NameTableColumnRegisterDoctorNumber +
+                " as depname, reg." + Config.NameTableColumnRegisterDoctorNumber +
                 ",doc." + Config.NameTableColumnDepartmentName +
                 " as docname, cat." + Config.NameTableColumnCategoryRegisterIsSpecialist +
 //                ", reg." + Config.NameTableColumnRegisterCurrentRegisterCount +   error statement
@@ -295,7 +295,7 @@ public class DBConnector {
                         " (select " + Config.NameTableColumnDepartmentNumber +
                                 "," + Config.NameTableColumnDepartmentName +
                                 " from " + Config.NameTableDepartment + ") as dep"
-                ) + "on doc." + Config.NameTableColumnDoctorDepartmentNumber +
+                ) + " on doc." + Config.NameTableColumnDoctorDepartmentNumber +
                 " = dep." + Config.NameTableColumnDepartmentNumber +
                 " inner join " + (
                         " (select " + Config.NameTableColumnCategoryRegisterNumber +

@@ -134,6 +134,7 @@ public class LoginController implements Initializable {
             String docName = resultSet.getString(Config.NameTableColumnDoctorName);
             DoctorController.name = docName;
             String docNum = resultSet.getString(Config.NameTableColumnDoctorNumber);
+            DoctorController.doctNum = docNum;
             System.out.println(docNum + docName);
             DBConnector.getInstance().updateDoctorLoginTime(docNum,
                                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
