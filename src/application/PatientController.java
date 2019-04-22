@@ -599,7 +599,7 @@ public class PatientController implements Initializable {
         list1 = FXCollections.observableArrayList();
         if((index = inputtyperegister.getSelectionModel().getSelectedIndex()) != -1) {
             for (ListItemForDoctName item : list0) {
-                if (item.isSpecialist || !listRegtypeFiltered.get(index).isSpecialist)
+                if (item.isSpecialist == listRegtypeFiltered.get(index).isSpecialist)
                     list1.add(item);
             }
             list0 = list1;
@@ -873,6 +873,15 @@ public class PatientController implements Initializable {
         service.start();
     }
     public void on_pushButtonClear_clicked() {
+        inputdep.getItems().clear();
+        inputdoctname.getItems().clear();
+        inputtyperegister.getItems().clear();
+        inputnamecat.getItems().clear();
+        reFilterDepartment(false);
+        reFilterDoctor(false);
+        reFilterRegisterType(false);
+        reFilterRegisterName(false);
+
         System.out.println("button clear clicked!");
     }
 

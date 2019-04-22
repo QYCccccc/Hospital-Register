@@ -98,25 +98,13 @@ public class DoctorController implements Initializable {
         buttonExit.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                Scene scene = null;
-                try {
-                    scene = new Scene(FXMLLoader.load(getClass().getResource("/view/Login.fxml")));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                FXRobotHelper.getStages().get(0).setScene(scene);
+                loadLoginView();
             }
         });
         buttonExit.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                Scene scene = null;
-                try {
-                    scene = new Scene(FXMLLoader.load(getClass().getResource("/view/Login.fxml")));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                FXRobotHelper.getStages().get(0).setScene(scene);
+                loadLoginView();
             }
         });
 
@@ -148,17 +136,27 @@ public class DoctorController implements Initializable {
 
         //将register对象的某些属性bind到挂号列表的特定列
         reg_id.setCellValueFactory(cellData -> cellData.getValue().number);
+        reg_id.setStyle("-fx-alignment: CENTER;");
         patient_name.setCellValueFactory(cellData -> cellData.getValue().patientName);
+        patient_name.setStyle("-fx-alignment: CENTER;");
         reg_time.setCellValueFactory(cellData -> cellData.getValue().regTime);
+        reg_time.setStyle("-fx-alignment: CENTER");
         regTab_reg_type.setCellValueFactory(cellData -> cellData.getValue().regType);
+        regTab_reg_type.setStyle("-fx-alignment: CENTER");
 
         //将Income对象的某些属性bind到收入列表的特定列
         dept_name.setCellValueFactory(cellData -> cellData.getValue().deptName);
+        dept_name.setStyle("-fx-alignment: CENTER");
         doct_id.setCellValueFactory(cellData -> cellData.getValue().doctId);
+        doct_id.setStyle("-fx-alignment: CENTER");
         doct_name.setCellValueFactory(cellData -> cellData.getValue().doctName);
+        doct_name.setStyle("-fx-alignment: CENTER");
         incomeTab_reg_type.setCellValueFactory(cellData -> cellData.getValue().regType);
+        incomeTab_reg_type.setStyle("-fx-alignment: CENTER");
         reg_count.setCellValueFactory(cellData -> cellData.getValue().regCount);
+        reg_count.setStyle("-fx-alignment: CENTER");
         totalincome.setCellValueFactory(cellData -> cellData.getValue().totalIncome);
+        totalincome.setStyle("-fx-alignment: CENTER");
     }
     //更新按钮的事件处理函数
     private void on_push_buttonRefresh() {
@@ -178,7 +176,7 @@ public class DoctorController implements Initializable {
             else {
                 result = DBConnector.getInstance().getRegisterForDoctor(doctNum,
                         startDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00",
-                        endDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00");
+                        endDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 23:59:59");
             }
             if (result == null) {
                 System.out.println("result set is empty!");
@@ -211,7 +209,7 @@ public class DoctorController implements Initializable {
             }
             else {
                 result = DBConnector.getInstance().getIncomeInfo(startDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00",
-                        endDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00");
+                        endDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 23:59:59");
             }
             if (result == null) {
                 System.out.println("result set is empty!");
@@ -232,5 +230,16 @@ public class DoctorController implements Initializable {
                 e.printStackTrace();
             }
         }
+    }
+    private void loadLoginView() {
+        Scene scene = null;
+        try {
+            scene = new Scene(FXMLLoader.load(getClass().getResource("/view/login.fxml")));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Can not open file login.fxml");
+            System.exit(-1);
+        }
+        FXRobotHelper.getStages().get(0).setScene(scene);
     }
 }

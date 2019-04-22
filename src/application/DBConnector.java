@@ -1,6 +1,8 @@
 package application;
 
 import java.sql.*;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 
 public class DBConnector {
     //JDBC驱动名以及数据库URL
@@ -40,7 +42,7 @@ public class DBConnector {
                                 String user, String pass) throws SQLException {
         String url = "jdbc:mysql://" + host + ":" + port +
                 "/" + dbName +
-                "?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=CONVERT_TO_NULL&serverTimezone=GMT";
+                "?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=CONVERT_TO_NULL&serverTimezone=Asia/Shanghai";
         //连接数据库
         conn = DriverManager.getConnection(url, user, pass);
         stm = conn.createStatement();
@@ -132,6 +134,7 @@ public class DBConnector {
             );
 
             int regNum, currCount;
+            Timestamp lastRegTime = null;
             if(!result.next())
                 regNum = 0;
             else
@@ -146,8 +149,28 @@ public class DBConnector {
             );
             if (!result.next())
                 currCount = 0;
-            else
+            else {
                 currCount = result.getInt(Config.NameTableColumnRegisterCurrentRegisterCount);
+                lastRegTime = result.getTimestamp(Config.NameTableColumnRegisterDateTime);
+            }
+            if(lastRegTime != null) {
+                int currYear = LocalDateTime.now().getDayOfYear();
+                int currMonth = LocalDateTime.now().getDayOfMonth();
+                DayOfWeek currWeek = LocalDateTime.now().getDayOfWeek();
+                //新的一天挂号计数清零
+                if (currYear > lastRegTime.toLocalDateTime().getDayOfYear()) {
+                    currCount = 0;
+                }
+                else if (currYear == lastRegTime.toLocalDateTime().getDayOfYear()) {
+                    if (currMonth > lastRegTime.toLocalDateTime().getDayOfMonth()) {
+                        currCount = 0;
+                    }
+                    else if (currMonth == lastRegTime.toLocalDateTime().getDayOfMonth()
+                            && currWeek.getValue() > lastRegTime.toLocalDateTime().getDayOfWeek().getValue()){
+                        currCount = 0;
+                    }
+                }
+            }
 
             //查询该病人编号是否存在
             result = handelstm.executeQuery(
